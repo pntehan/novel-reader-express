@@ -62,6 +62,17 @@ router.post('/getBook', function(req, res, next) {
   })
 });
 
+router.post('/getSearchList', function(req, res, next) {
+  let word = "%" + req.body.searchWord + "%"
+  // 获取类别信息
+  let sql = "select * from book where name like '"+ word +"' or author like '"+ word +"' or intro like '"+ word +"'"
+  console.log(sql)
+  db.query(sql, (err, books) => {
+    books = toBase64(books)
+    res.send({data: books})
+  })
+});
+
 router.post('/getCategorybooks', function(req, res, next) {
   let name = req.body.name
   // 获取类别信息
