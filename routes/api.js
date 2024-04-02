@@ -142,6 +142,14 @@ router.post('/getChapter', function(req, res, next) {
 });
 
 // user part
+router.post('/getUser', function(req, res, next) {
+  let user_id = parseInt(req.body.user_id, 10)
+  // 获取类别信息
+  db.query("select * from user where id="+user_id, (err, users) => {
+    res.send({data: users[0]})
+  })
+});
+
 router.post('/userLogin', function(req, res, next) {
   let email = req.body.email
   let password = req.body.password
@@ -183,6 +191,54 @@ router.post('/userRegister', function(req, res, next) {
           res.send({status: 200})
         }
       })
+    }
+  })
+});
+
+router.post('/userUpdate', function(req, res, next) {
+  let name = req.body.name
+  let email = req.body.email
+  let intro = req.body.intro
+  let password = req.body.password
+  // 进行更新
+  let sql = "update user set name=?, password=?, intro=? where email=?"
+  let values = [name, password, intro, email]
+  db.query(sql, values, (err) => {
+    if (err) {
+      console.log(err)
+      res.send({status: 500})
+    }
+    else {
+      db.query("select * from user where email='"+email+"'", (err, users) => {
+        res.send({status: 200, data: users[0]})
+      })
+    }
+  })
+});
+
+router.post('/getCommentByUser', function(req, res, next) {
+  let user_id = req.body.user_id
+  // 进行查询
+  db.query("select * from comment where user_id="+user_id, (err, comments) => {
+    if (err) {
+      console.log(err)
+      res.send({status: 500})
+    }
+    else {
+      res.send({status: 200, data: comments})
+    }
+  })
+});
+
+router.get('/getInfoByUser', function(req, res, next) {
+  // 进行查询
+  db.query("select * from announcement", (err, infos) => {
+    if (err) {
+      console.log(err)
+      res.send({status: 500})
+    }
+    else {
+      res.send({status: 200, data: infos})
     }
   })
 });
